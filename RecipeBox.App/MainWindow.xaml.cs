@@ -1,5 +1,4 @@
-﻿using RecipeBox.App.ViewModels;
-using System.Windows;
+﻿using System.Windows;
 
 namespace RecipeBox.App
 {
@@ -11,7 +10,6 @@ namespace RecipeBox.App
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }

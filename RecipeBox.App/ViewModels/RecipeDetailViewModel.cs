@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using RecipeBox.App.Views;
+using Microsoft.EntityFrameworkCore;
+using RecipeBox.App.Services;
 using RecipeBox.Data.DataContext;
 using RecipeBox.Domain.Models;
 using System.Collections.ObjectModel;
@@ -9,66 +10,86 @@ namespace RecipeBox.App.ViewModels
 {
     public partial class RecipeDetailViewModel : ObservableObject
     {
-        public Action OnSave { get; set; }
+        public Action<Recipe> OnSave { get; set; }
         public Action OnCancel { get; set; }
+
+        private readonly User _currentUser;
+        private readonly IDialogService _dialogService;
+        private readonly RecipeBoxContext _context;
+
         public int RecipeId { get; private set; }
         public bool CanMakePublic { get; }
 
-        [ObservableProperty]
-        private string _title;
-
-        [ObservableProperty]
-        private string _instructions;
-
-        [ObservableProperty]
-        private bool _isPublic;
+        [ObservableProperty] private string _title;
+        [ObservableProperty] private string _instructions;
+        [ObservableProperty] private bool _isPublic;
+        [ObservableProperty] private RecipeIngredient _selectedIngredient;
 
         public ObservableCollection<RecipeIngredient> Ingredients { get; set; }
 
-        [ObservableProperty]
-        private RecipeIngredient _selectedIngredient;
-
-        public RecipeDetailViewModel(User currentUser)
+        public RecipeDetailViewModel(Recipe recipeToEdit, User currentUser,
+            IDialogService dialogService, RecipeBoxContext context)
         {
-            CanMakePublic = currentUser.Role == UserRole.Contributor ||
-                currentUser.Role == UserRole.Administrator;
+            _currentUser = currentUser;
+            _dialogService = dialogService;
+            _context = context;
+
             Ingredients = new ObservableCollection<RecipeIngredient>();
+            CanMakePublic = _currentUser.Role == UserRole.Contributor || _currentUser.Role == UserRole.Administrator;
+
+            if (recipeToEdit != null)
+            {
+                RecipeId = recipeToEdit.RecipeId;
+                Title = recipeToEdit.Title;
+                Instructions = recipeToEdit.Instructions;
+                IsPublic = recipeToEdit.IsPublic;
+
+                LoadIngredientsForRecipe(recipeToEdit.RecipeId);
+            }
         }
 
-        public RecipeDetailViewModel(Recipe recipeToEdit, User currentUser)
+        private void LoadIngredientsForRecipe(int recipeId)
         {
-            CanMakePublic = currentUser.Role == UserRole.Contributor ||
-                currentUser.Role == UserRole.Administrator;
+            var ingredientsFromDb = _context.RecipeIngredients
+                                            .Include(ri => ri.Ingredient) 
+                                            .Where(ri => ri.RecipeId == recipeId)
+                                            .ToList();
 
-            RecipeId = recipeToEdit.RecipeId;
-            Title = recipeToEdit.Title;
-            Instructions = recipeToEdit.Instructions;
-            IsPublic = recipeToEdit.IsPublic;
-            
-            Ingredients = new ObservableCollection<RecipeIngredient>
-                (recipeToEdit.Ingredients ?? Enumerable.Empty<RecipeIngredient>());
+            foreach (var ing in ingredientsFromDb)
+            {
+                Ingredients.Add(ing);
+            }
         }
 
         [RelayCommand]
         private void AddIngredient()
         {
-            var dialogVM = new AddIngredientViewModel();
-            var dialog = new AddIngredientDialog
-            {
-                DataContext = dialogVM,
-                Owner = App.Current.MainWindow 
-            };
+            var result = _dialogService.ShowAddIngredientDialog();
 
-            if (dialog.ShowDialog() == true)
+            if (result.Confirmed)
             {
+                var ingredientEntity = GetOrCreateIngredient(result.Name);
+
                 var newIngredient = new RecipeIngredient
                 {
-                    Ingredient = new Ingredient { Name = dialogVM.Name },
-                    Quantity = dialogVM.Quantity
+                    Ingredient = ingredientEntity,
+                    Quantity = result.Quantity
                 };
 
                 Ingredients.Add(newIngredient);
             }
+        }
+
+        private Ingredient GetOrCreateIngredient(string name)
+        {
+            var ingredient = _context.Ingredients.FirstOrDefault(i => i.Name.ToLower() == name.ToLower());
+
+            if (ingredient == null)
+            {
+                ingredient = new Ingredient { Name = name };
+                _context.Ingredients.Add(ingredient);
+            }
+            return ingredient;
         }
 
         [RelayCommand]
@@ -83,13 +104,19 @@ namespace RecipeBox.App.ViewModels
         [RelayCommand]
         private void Save()
         {
-            OnSave?.Invoke();
+            var recipeData = new Recipe
+            {
+                RecipeId = this.RecipeId,
+                Title = this.Title,
+                Instructions = this.Instructions,
+                IsPublic = this.IsPublic,
+                AuthorId = _currentUser.UserId,
+                Ingredients = this.Ingredients.ToList()
+            };
+            OnSave?.Invoke(recipeData);
         }
 
         [RelayCommand]
-        private void Cancel()
-        {
-            OnCancel?.Invoke();
-        }
+        private void Cancel() => OnCancel?.Invoke();
     }
 }

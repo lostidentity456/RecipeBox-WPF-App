@@ -1,30 +1,27 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RecipeBox.App.Services;
 using RecipeBox.Data.DataContext;
 using RecipeBox.Domain.Models;
-using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace RecipeBox.App.ViewModels
 {
     public partial class UserManagementViewModel : ObservableObject
     {
-        public Action OnGoBack { get; set; }
-
-        public ObservableCollection<User> Users { get; set; }
+        private readonly IDialogService _dialogService;
+        private readonly RecipeBoxContext _context;
 
         [ObservableProperty]
         private User _selectedUser;
 
-        [ObservableProperty]
-        private UserRole _selectedUserRole;
+        public ObservableCollection<User> Users { get; set; }
 
-        // This provides the list of all possible roles to the ComboBox
-        public UserRole[] AllRoles => (UserRole[])Enum.GetValues(typeof(UserRole));
-
-        public UserManagementViewModel()
+        public UserManagementViewModel(IDialogService dialogService, RecipeBoxContext context)
         {
+            _dialogService = dialogService;
+            _context = context;
+
             Users = new ObservableCollection<User>();
             LoadUsers();
         }
@@ -32,44 +29,34 @@ namespace RecipeBox.App.ViewModels
         private void LoadUsers()
         {
             Users.Clear();
-            using var context = new RecipeBoxContext();
-            var users = context.Users.ToList();
-            foreach (var user in users)
+            // Use the injected _context
+            var usersFromDb = _context.Users.ToList();
+            foreach (var user in usersFromDb)
             {
                 Users.Add(user);
             }
         }
 
-        // When the user selection changes, update the ComboBox to show their current role
-        partial void OnSelectedUserChanged(User value)
+        [RelayCommand]
+        private void ChangeRole()
         {
-            if (value != null)
+            if (SelectedUser == null)
             {
-                SelectedUserRole = value.Role;
+                _dialogService.ShowMessage("Please select a user.");
+                return;
             }
+
+            var currentRole = SelectedUser.Role;
+            var nextRole = (UserRole)(((int)currentRole + 1) % 3);
+            SelectedUser.Role = nextRole;
+
+            _context.Users.Update(SelectedUser);
+            _context.SaveChanges();
+
+            _dialogService.ShowMessage($"{SelectedUser.Username}'s role changed to {SelectedUser.Role}.");
+
+            LoadUsers();
         }
 
-        [RelayCommand]
-        private void SaveChanges()
-        {
-            if (SelectedUser != null)
-            {
-                using var context = new RecipeBoxContext();
-                var userToUpdate = context.Users.Find(SelectedUser.UserId);
-                if (userToUpdate != null)
-                {
-                    userToUpdate.Role = SelectedUserRole;
-                    context.SaveChanges();
-                    // Optional: Refresh the list to reflect changes immediately
-                    LoadUsers();
-                }
-            }
-        }
-
-        [RelayCommand]
-        private void GoBack()
-        {
-            OnGoBack?.Invoke();
-        }
     }
 }

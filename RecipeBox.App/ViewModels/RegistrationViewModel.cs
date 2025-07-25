@@ -1,15 +1,26 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using RecipeBox.Domain.Models;
+using RecipeBox.App.Services;
 using RecipeBox.Data.DataContext;
-using System.Windows;
+using RecipeBox.Domain.Models;
+
 
 namespace RecipeBox.App.ViewModels
 {
     public partial class RegistrationViewModel : ObservableObject
     {
+        private readonly IDialogService _dialogService;
+        private readonly RecipeBoxContext _context;
+        
         [ObservableProperty]
         private string _username;
+
+        public RegistrationViewModel(IDialogService dialogService, RecipeBoxContext context)
+        {
+            _dialogService = dialogService;
+            _context = context;
+        }
+
         [RelayCommand]
         private void Register(object parameter)
         {
@@ -17,7 +28,7 @@ namespace RecipeBox.App.ViewModels
             var passwordBox = parameter as System.Windows.Controls.PasswordBox;
             if (passwordBox == null)
             {
-                MessageBox.Show("An error occurred with the password input.");
+                _dialogService.ShowMessage("An error occurred with the password input.");
                 return;
             }
 
@@ -27,15 +38,13 @@ namespace RecipeBox.App.ViewModels
             // The rest of your logic now uses the local 'plainPassword' variable
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(plainPassword))
             {
-                MessageBox.Show("Username and password cannot be empty.");
+                _dialogService.ShowMessage("Username and password cannot be empty.");
                 return;
             }
 
-            using var context = new RecipeBoxContext();
-
-            if (context.Users.Any(u => u.Username == Username))
+            if (_context.Users.Any(u => u.Username == Username))
             {
-                MessageBox.Show("Username already taken.");
+                _dialogService.ShowMessage("Username already taken.");
                 return;
             }
 
@@ -48,10 +57,10 @@ namespace RecipeBox.App.ViewModels
                 Role = UserRole.Standard
             };
 
-            context.Users.Add(newUser);
-            context.SaveChanges();
+            _context.Users.Add(newUser);
+            _context.SaveChanges();
 
-            MessageBox.Show("Registration successful! You can now log in.");
+            _dialogService.ShowMessage("Registration successful! You can now log in.");
         }
     }
 }

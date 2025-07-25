@@ -1,20 +1,28 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RecipeBox.App.Services;
 using RecipeBox.Data.DataContext;
 using RecipeBox.Domain.Models;
-using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace RecipeBox.App.ViewModels
 {
     public partial class LoginViewModel : ObservableObject
     {
+        private readonly IDialogService _dialogService;
+        private readonly RecipeBoxContext _context;
+
         [ObservableProperty]
         private string _username;
 
         // This event will be triggered on successful login
         public Action<User> OnLoginSuccess { get; set; }
+
+        public LoginViewModel(IDialogService dialogService, RecipeBoxContext context)
+        {
+            _dialogService = dialogService;
+            _context = context;
+        }
 
         [RelayCommand]
         private void Login(object parameter)
@@ -26,14 +34,12 @@ namespace RecipeBox.App.ViewModels
 
             if (string.IsNullOrWhiteSpace(Username) || string.IsNullOrWhiteSpace(plainPassword))
             {
-                MessageBox.Show("Username and password cannot be empty.");
+                _dialogService.ShowMessage("Username and password cannot be empty.");
                 return;
             }
 
-            using var context = new RecipeBoxContext();
-
             // 1. Find the user by username
-            var user = context.Users.FirstOrDefault(u => u.Username == Username);
+            var user = _context.Users.FirstOrDefault(u => u.Username == Username);
 
             // 2. Check if user exists and verify password
             if (user != null && BCrypt.Net.BCrypt.Verify(plainPassword, user.PasswordHash))
@@ -43,7 +49,7 @@ namespace RecipeBox.App.ViewModels
             }
             else
             {
-                MessageBox.Show("Invalid username or password.");
+                _dialogService.ShowMessage("Invalid username or password.");
             }
         }
     }
