@@ -15,7 +15,7 @@ namespace RecipeBox.App.ViewModels
 
         private readonly User _currentUser;
         private readonly IDialogService _dialogService;
-        private readonly RecipeBoxContext _context;
+        private readonly IDbContextFactory<RecipeBoxContext> _contextFactory; // Use the factory
 
         public int RecipeId { get; private set; }
         public bool CanMakePublic { get; }
@@ -27,12 +27,12 @@ namespace RecipeBox.App.ViewModels
 
         public ObservableCollection<RecipeIngredient> Ingredients { get; set; }
 
-        public RecipeDetailViewModel(Recipe recipeToEdit, User currentUser,
-            IDialogService dialogService, RecipeBoxContext context)
+        // The constructor is now consistent with RecipeListViewModel
+        public RecipeDetailViewModel(Recipe recipeToEdit, User currentUser, IDialogService dialogService, IDbContextFactory<RecipeBoxContext> contextFactory)
         {
             _currentUser = currentUser;
             _dialogService = dialogService;
-            _context = context;
+            _contextFactory = contextFactory;
 
             Ingredients = new ObservableCollection<RecipeIngredient>();
             CanMakePublic = _currentUser.Role == UserRole.Contributor || _currentUser.Role == UserRole.Administrator;
@@ -50,10 +50,12 @@ namespace RecipeBox.App.ViewModels
 
         private void LoadIngredientsForRecipe(int recipeId)
         {
-            var ingredientsFromDb = _context.RecipeIngredients
-                                            .Include(ri => ri.Ingredient) 
-                                            .Where(ri => ri.RecipeId == recipeId)
-                                            .ToList();
+            using var context = _contextFactory.CreateDbContext();
+
+            var ingredientsFromDb = context.RecipeIngredients
+                                           .Include(ri => ri.Ingredient) 
+                                           .Where(ri => ri.RecipeId == recipeId)
+                                           .ToList();
 
             foreach (var ing in ingredientsFromDb)
             {
@@ -68,28 +70,14 @@ namespace RecipeBox.App.ViewModels
 
             if (result.Confirmed)
             {
-                var ingredientEntity = GetOrCreateIngredient(result.Name);
-
                 var newIngredient = new RecipeIngredient
                 {
-                    Ingredient = ingredientEntity,
+                    Ingredient = new Ingredient { Name = result.Name }, 
                     Quantity = result.Quantity
                 };
 
                 Ingredients.Add(newIngredient);
             }
-        }
-
-        private Ingredient GetOrCreateIngredient(string name)
-        {
-            var ingredient = _context.Ingredients.FirstOrDefault(i => i.Name.ToLower() == name.ToLower());
-
-            if (ingredient == null)
-            {
-                ingredient = new Ingredient { Name = name };
-                _context.Ingredients.Add(ingredient);
-            }
-            return ingredient;
         }
 
         [RelayCommand]

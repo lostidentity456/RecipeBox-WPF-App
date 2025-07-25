@@ -38,6 +38,7 @@ namespace RecipeBox.App
             services.AddTransient<MainViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<RegistrationViewModel>();
+            services.AddTransient<UserManagementViewModel>();
 
             // Build the service provider (this is correct)
             _serviceProvider = services.BuildServiceProvider();

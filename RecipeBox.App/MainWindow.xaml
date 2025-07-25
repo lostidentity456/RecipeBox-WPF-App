@@ -21,6 +21,9 @@
         <DataTemplate DataType="{x:Type vm:RecipeDetailViewModel}">
             <v:RecipeDetailView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:UserManagementViewModel}">
+            <v:UserManagementView/>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <ContentControl Content="{Binding CurrentViewModel}" />

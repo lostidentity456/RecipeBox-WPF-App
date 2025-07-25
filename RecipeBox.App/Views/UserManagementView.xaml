@@ -7,38 +7,47 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="*"/>
             <!-- User List -->
-            <ColumnDefinition Width="*"/>
-            <!-- Details Panel -->
-        </Grid.ColumnDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Buttons -->
+        </Grid.RowDefinitions>
 
-        <!-- User List Panel -->
-        <DockPanel Grid.Column="0">
-            <TextBlock Text="Users" FontSize="18" FontWeight="Bold" DockPanel.Dock="Top" Margin="5"/>
-            <ListView ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Username}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </DockPanel>
+        <Grid Grid.Row="0" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <!-- The title will take up the available space -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- The button will take up just the space it needs -->
+            </Grid.ColumnDefinitions>
 
-        <!-- Details Panel (This binding will now work correctly) -->
-        <StackPanel Grid.Column="1" Margin="20,0,0,0"
-                    Visibility="{Binding SelectedUser, Converter={StaticResource NullToVisibilityConverter}}">
-            <TextBlock Text="Edit User" FontSize="18" FontWeight="Bold" Margin="5"/>
-            <TextBlock Text="{Binding SelectedUser.Username, StringFormat='Editing: {0}'}" FontSize="16" Margin="5"/>
+            <TextBlock Grid.Column="0" Text="User Management" FontSize="24" FontWeight="Bold"/>
 
-            <TextBlock Text="Role:" Margin="5,15,5,5"/>
-            <ComboBox ItemsSource="{Binding AllRoles}" 
-                      SelectedItem="{Binding SelectedUserRole, Mode=TwoWay}"
-                      Width="200" HorizontalAlignment="Left" Margin="5,0,0,0"/>
+            <Button Grid.Column="1" Content="Back to Recipes" VerticalAlignment="Center"
+                    Command="{Binding DataContext.ShowRecipeListViewCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                    Width="120"/>
+        </Grid>
 
-            <Button Content="Save Changes" Command="{Binding SaveChangesCommand}" Width="150" Margin="5,20,0,0"/>
-            <Button Content="Back to Recipe List" Command="{Binding GoBackCommand}" Width="150" Margin="5,10,0,0"/>
+        <ListView Grid.Row="1" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" Margin="5,10,5,10">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="User ID" Width="100" DisplayMemberBinding="{Binding UserId}"/>
+                    <GridViewColumn Header="Username" Width="250" DisplayMemberBinding="{Binding Username}"/>
+                    <GridViewColumn Header="Role" Width="200" DisplayMemberBinding="{Binding Role}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- =================== ACTION BUTTONS (ROW 2) - BUTTONS IMPLEMENTED =================== -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5,0,0,0">
+            <!-- "Add New User" button will be implemented next -->
+            <Button Content="Add New User" Command="{Binding AddUserCommand}" Width="120"/>
+            <!-- The "Edit" button is now bound to your ChangeRoleCommand -->
+            <Button Content="Change Role" Command="{Binding ChangeRoleCommand}" Width="120" Margin="5,0,0,0"/>
+            <Button Content="Delete Selected" Command="{Binding DeleteUserCommand}" Width="120" Margin="5,0,0,0"/>
         </StackPanel>
     </Grid>
 </UserControl>
