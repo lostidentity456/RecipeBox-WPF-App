@@ -1,0 +1,14 @@
+﻿<Application x:Class="RecipeBox.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:RecipeBox.App.Converters"
+             xmlns:local="clr-namespace:RecipeBox.App"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Your existing converter -->
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- PASTE THE NEW CONVERTER HERE -->
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </Application.Resources>
+</Application>
