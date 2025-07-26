@@ -78,8 +78,6 @@ namespace RecipeBox.App.ViewModels
 
         private void ShowRecipeDetailView(Recipe recipeToEdit = null)
         {
-            // === CRITICAL FIX IS HERE ===
-            // Provide the IDbContextFactory, not a direct DbContext.
             var recipeDetailVM = new RecipeDetailViewModel(
                 recipeToEdit,
                 _loggedInUser,
@@ -106,10 +104,8 @@ namespace RecipeBox.App.ViewModels
             var contextFactory = _serviceProvider.GetRequiredService<IDbContextFactory<RecipeBoxContext>>();
             using var context = contextFactory.CreateDbContext();
 
-            // The rest of your SaveRecipe logic is excellent and does not need to change.
             if (recipeData.RecipeId != 0)
             {
-                // ... Update Logic ...
                 var originalRecipe = context.Recipes
                     .Include(r => r.Ingredients)
                     .ThenInclude(ri => ri.Ingredient)
@@ -139,7 +135,6 @@ namespace RecipeBox.App.ViewModels
             }
             else
             {
-                // ... Create Logic ...
                 foreach (var recipeIngredient in recipeData.Ingredients)
                 {
                     var existingIngredient = context.Ingredients
@@ -153,6 +148,12 @@ namespace RecipeBox.App.ViewModels
                 context.Recipes.Add(recipeData);
             }
             context.SaveChanges();
+        }
+
+        [RelayCommand]
+        private void ShowPublicRecipeView()
+        {
+            CurrentViewModel = _serviceProvider.GetRequiredService<PublicRecipeViewModel>();
         }
     }
 }

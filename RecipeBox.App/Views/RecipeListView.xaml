@@ -4,48 +4,60 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:converters="clr-namespace:RecipeBox.App.Converters"
              xmlns:local="clr-namespace:RecipeBox.App.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="10">
-        <!-- Three rows for Header, List, and Buttons -->
         <Grid.RowDefinitions>
-            <!-- Row 0 for Header -->
             <RowDefinition Height="Auto"/>
-            <!-- Row 1 for ListView -->
             <RowDefinition Height="*"/>
-            <!-- Row 2 for Buttons -->
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="5">
 
-            <!-- Section 1: Welcome message and Logout button on the same line -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding WelcomeMessage}" FontSize="20" FontWeight="Bold" Grid.Column="0"/>
-                <Button Content="Manage Users" 
-                           Command="{Binding DataContext.ShowUserManagementViewCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                           Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType={x:Type Window}}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                           HorizontalAlignment="Right" Margin="0,0,5,0"/>
-                <Button Content="Logout" Grid.Column="1" VerticalAlignment="Center"
-                Command="{Binding DataContext.LogoutCommand, 
-                                  RelativeSource={RelativeSource AncestorType={x:Type Window}}}"/>
+
+                <TextBlock Grid.Column="0" Text="{Binding WelcomeMessage}" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                    <Button Content="Discover"
+                            Command="{Binding DataContext.ShowPublicRecipeViewCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            VerticalAlignment="Center"
+                            ToolTip="See public recipes from all users"/>
+
+                    <Button Content="Manage Users" 
+                            Command="{Binding DataContext.ShowUserManagementViewCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                            Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType={x:Type Window}}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            VerticalAlignment="Center"
+                            Margin="8,0,0,0"/>
+
+                    <Button Content="Logout"
+                            Command="{Binding DataContext.LogoutCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                            Style="{StaticResource MaterialDesignToolButton}"
+                            VerticalAlignment="Center"
+                            Margin="8,0,0,0"/>
+                </StackPanel>
             </Grid>
 
-            <StackPanel Orientation="Horizontal" Margin="0,15,0,15">
-                <TextBlock Text="Search:" FontWeight="Bold" Margin="{StaticResource Spacing.Large.Top}"/>
-                <TextBox Text="{Binding SearchTerm}" Margin="{StaticResource Spacing.Small.Top}"/>
-            </StackPanel>
+            <TextBox materialDesign:HintAssist.Hint="Search your recipes by title..."
+                     Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged, Delay=250}" 
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Margin="0,16,0,0"/>
+
         </StackPanel>
 
         <ListView Grid.Row="1" ItemsSource="{Binding Recipes}" 
-                    SelectedItem="{Binding SelectedRecipe}" 
-                    Margin="{StaticResource Spacing.Medium.Top}">
+                  SelectedItem="{Binding SelectedRecipe}" 
+                  Margin="5,10,5,10">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <i:InvokeCommandAction Command="{Binding EditRecipeCommand}" />
@@ -53,19 +65,16 @@
             </i:Interaction.Triggers>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Title" Width="300" 
-                    DisplayMemberBinding="{Binding Title}"/>
-                    <GridViewColumn Header="Public to People" Width="100" 
-                    DisplayMemberBinding="{Binding IsPublic}"/>
+                    <GridViewColumn Header="Title" Width="300" DisplayMemberBinding="{Binding Title}"/>
+                    <GridViewColumn Header="Show Public to People" Width="300" DisplayMemberBinding="{Binding IsPublic,
+                        Converter={StaticResource BooleanToYesNoConverter}}"/>
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5,10,0,0">
-            <Button Content="New Recipe" Command="{Binding CreateNewRecipeCommand}" 
-                    Width="120"/>
-            <Button Content="Delete Selected" Command="{Binding DeleteRecipeCommand}" 
-                    Width="150" Margin="5,0,0,0"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5,0,0,0">
+            <Button Content="New Recipe" Command="{Binding CreateNewRecipeCommand}" Style="{StaticResource MaterialDesignRaisedButton}"/>
+            <Button Content="Delete Selected" Command="{Binding DeleteRecipeCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="8,0,0,0"/>
         </StackPanel>
     </Grid>
 </UserControl>

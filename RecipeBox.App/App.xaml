@@ -16,6 +16,7 @@
 
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter"/>
 
            <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}"
                             x:Key="UserRolesEnum">
