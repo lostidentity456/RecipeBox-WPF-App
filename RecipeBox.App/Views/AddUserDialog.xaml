@@ -4,21 +4,49 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecipeBox.App.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="Add New User" SizeToContent="WidthAndHeight"
-        WindowStartupLocation="CenterOwner" Height="450" Width="450">
-    <StackPanel Margin="15">
-        <TextBlock Text="Username:"/>
-        <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" Margin="0,5"/>
-        <TextBlock Text="Password:"/>
-        <PasswordBox x:Name="UserPasswordBox" Margin="0,5"/>
-        <TextBlock Text="Role:"/>
-        <!-- Bind to the resource we created in App.xaml -->
-        <ComboBox ItemsSource="{Binding Source={StaticResource UserRolesEnum}}" 
-                  SelectedValue="{Binding SelectedRole}" Margin="0,5"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-            <Button Content="OK" IsDefault="True" Click="OkButton_Click" MinWidth="80"/>
-            <Button Content="Cancel" IsCancel="True" MinWidth="80" Margin="5,0,0,0"/>
+        WindowStartupLocation="CenterOwner" Height="300" Width="300"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="Auto"/>
+            <!-- Form -->
+            <RowDefinition Height="Auto"/>
+            <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Create New User" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0,0,0,16"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Username:" VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Password:" VerticalAlignment="Center" Margin="0,16,16,0"/>
+            <PasswordBox Grid.Row="1" Grid.Column="1" x:Name="UserPasswordBox" Margin="0,16,0,0"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Role:" VerticalAlignment="Center" Margin="0,16,16,0"/>
+            <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Source={StaticResource UserRolesEnum}}" 
+                      SelectedValue="{Binding SelectedRole}" Margin="0,16,0,0"/>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Content="OK" IsDefault="True" Click="OkButton_Click" Style="{StaticResource MaterialDesignRaisedButton}"/>
+            <Button Content="Cancel" IsCancel="True" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="8,0,0,0"/>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

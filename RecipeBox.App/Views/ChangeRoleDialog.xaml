@@ -4,24 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecipeBox.App.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        SizeToContent="WidthAndHeight" 
-        WindowStartupLocation="CenterOwner" Height="300" Width="300">
-    <StackPanel Margin="15">
-        <!-- Display the username so the admin knows who they are editing -->
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="Change role for: " FontWeight="Bold"/>
-            <TextBlock Text="{Binding Username}"/>
+        Title="Change User Role" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner"
+        Width="350"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+    <StackPanel Margin="16">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+            <TextBlock Text="Change role for: " Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+            <TextBlock Text="{Binding Username}" FontWeight="Bold" Style="{StaticResource MaterialDesignBody1TextBlock}"/>
         </StackPanel>
 
-        <TextBlock Text="New Role:"/>
-        <!-- We reuse the same ObjectDataProvider from App.xaml -->
-        <ComboBox ItemsSource="{Binding Source={StaticResource UserRolesEnum}}" 
-                  SelectedValue="{Binding SelectedRole}" Margin="0,5"/>
+        <ComboBox materialDesign:HintAssist.Hint="Select New Role"
+                  ItemsSource="{Binding Source={StaticResource UserRolesEnum}}" 
+                  SelectedValue="{Binding SelectedRole}" 
+                  Style="{StaticResource MaterialDesignOutlinedComboBox}"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-            <Button Content="OK" IsDefault="True" Click="OkButton_Click" MinWidth="80"/>
-            <Button Content="Cancel" IsCancel="True" MinWidth="80" Margin="5,0,0,0"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Content="OK" IsDefault="True" Click="OkButton_Click" Style="{StaticResource MaterialDesignRaisedButton}"/>
+            <Button Content="Cancel" IsCancel="True" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="8,0,0,0"/>
         </StackPanel>
     </StackPanel>
 </Window>

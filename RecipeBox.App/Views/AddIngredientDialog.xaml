@@ -4,20 +4,56 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecipeBox.App.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="Add Ingredient" SizeToContent="WidthAndHeight"
-        WindowStartupLocation="CenterOwner"
-        WindowStyle="ToolWindow" ResizeMode="NoResize">
-    <StackPanel Margin="15">
-        <TextBlock Text="Ingredient Name:"/>
-        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Width="250" Margin="0,5,0,0"/>
+        Title="Add Ingredient" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner"
+        Width="400"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Form Grid -->
+            <RowDefinition Height="Auto"/>
+            <!-- Buttons -->
+        </Grid.RowDefinitions>
 
-        <TextBlock Text="Quantity:" Margin="0,15,0,0"/>
-        <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Width="250" Margin="0,5,0,0"/>
+        <!-- Use a Grid to align labels and textboxes -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <!-- Column for labels -->
+                <ColumnDefinition Width="*"/>
+                <!-- Column for textboxes -->
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Name Row -->
+                <RowDefinition Height="Auto"/>
+                <!-- Quantity Row -->
+            </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="OK" Width="80" IsDefault="True" Click="OkButton_Click"/>
-            <Button Content="Cancel" Width="80" IsCancel="True" Margin="5,0,0,0"/>
+            <!-- Ingredient Name Row -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Ingredient Name:" 
+                       VerticalAlignment="Center" Margin="0,0,16,0"/>
+            <TextBox Grid.Row="0" Grid.Column="1" 
+                     materialDesign:HintAssist.Hint="e.g., Flour, Sugar"
+                     Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <!-- Quantity Row -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Quantity:" 
+                       VerticalAlignment="Center" Margin="0,16,16,0"/>
+            <TextBox Grid.Row="1" Grid.Column="1"
+                     materialDesign:HintAssist.Hint="e.g., 2 cups, 100g"
+                     Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0,16,0,0"/>
+
+        </Grid>
+
+        <!-- Buttons Row -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button Content="OK" IsDefault="True" Click="OkButton_Click" Style="{StaticResource MaterialDesignRaisedButton}"/>
+            <Button Content="Cancel" IsCancel="True" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="8,0,0,0"/>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

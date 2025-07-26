@@ -28,10 +28,12 @@
 
             <Button Grid.Column="1" Content="Back to Recipes" VerticalAlignment="Center"
                     Command="{Binding DataContext.ShowRecipeListViewCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-                    Width="120"/>
+                    Width="150"/>
         </Grid>
 
-        <ListView Grid.Row="1" ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}" Margin="5,10,5,10">
+        <ListView Grid.Row="1" ItemsSource="{Binding Users}" 
+                     SelectedItem="{Binding SelectedUser}" 
+                     Margin="{StaticResource Spacing.Medium.Top}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="User ID" Width="100" DisplayMemberBinding="{Binding UserId}"/>
@@ -41,13 +43,10 @@
             </ListView.View>
         </ListView>
 
-        <!-- =================== ACTION BUTTONS (ROW 2) - BUTTONS IMPLEMENTED =================== -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="5,0,0,0">
-            <!-- "Add New User" button will be implemented next -->
-            <Button Content="Add New User" Command="{Binding AddUserCommand}" Width="120"/>
-            <!-- The "Edit" button is now bound to your ChangeRoleCommand -->
-            <Button Content="Change Role" Command="{Binding ChangeRoleCommand}" Width="120" Margin="5,0,0,0"/>
-            <Button Content="Delete Selected" Command="{Binding DeleteUserCommand}" Width="120" Margin="5,0,0,0"/>
+            <Button Content="Add New User" Command="{Binding AddUserCommand}" Width="150"/>
+            <Button Content="Change Role" Command="{Binding ChangeRoleCommand}" Width="150" Margin="5,0,0,0"/>
+            <Button Content="Delete Selected" Command="{Binding DeleteUserCommand}" Width="150" Margin="5,0,0,0"/>
         </StackPanel>
     </Grid>
 </UserControl>

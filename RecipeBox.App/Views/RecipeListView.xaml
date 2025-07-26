@@ -38,14 +38,14 @@
             </Grid>
 
             <StackPanel Orientation="Horizontal" Margin="0,15,0,15">
-                <TextBlock Text="Search:" FontWeight="Bold" VerticalAlignment="Center"/>
-                <TextBox Text="{Binding SearchTerm, UpdateSourceTrigger=PropertyChanged}" 
-                         Width="300" Margin="5,0,0,0"/>
+                <TextBlock Text="Search:" FontWeight="Bold" Margin="{StaticResource Spacing.Large.Top}"/>
+                <TextBox Text="{Binding SearchTerm}" Margin="{StaticResource Spacing.Small.Top}"/>
             </StackPanel>
         </StackPanel>
 
         <ListView Grid.Row="1" ItemsSource="{Binding Recipes}" 
-          SelectedItem="{Binding SelectedRecipe}">
+                    SelectedItem="{Binding SelectedRecipe}" 
+                    Margin="{StaticResource Spacing.Medium.Top}">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <i:InvokeCommandAction Command="{Binding EditRecipeCommand}" />
@@ -55,7 +55,7 @@
                 <GridView>
                     <GridViewColumn Header="Title" Width="300" 
                     DisplayMemberBinding="{Binding Title}"/>
-                    <GridViewColumn Header="Public" Width="100" 
+                    <GridViewColumn Header="Public to People" Width="100" 
                     DisplayMemberBinding="{Binding IsPublic}"/>
                 </GridView>
             </ListView.View>
@@ -65,7 +65,7 @@
             <Button Content="New Recipe" Command="{Binding CreateNewRecipeCommand}" 
                     Width="120"/>
             <Button Content="Delete Selected" Command="{Binding DeleteRecipeCommand}" 
-                    Width="120" Margin="5,0,0,0"/>
+                    Width="150" Margin="5,0,0,0"/>
         </StackPanel>
     </Grid>
 </UserControl>
